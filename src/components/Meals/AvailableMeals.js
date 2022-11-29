@@ -10,7 +10,7 @@ const AvailableMeals = () => {
 
   useEffect(() => {
     const fetchMeals = async() => {
-      const response = await fetch('https://food-order-app-88517-default-rtdb.firebaseio.com/meals.json');
+      const response = await fetch('https://food-order-app-88517-default-rtdb.firebaseio.com/meals');
       const responseData = await response.json();
 
       const loadedMeals = [];
@@ -30,6 +30,7 @@ const AvailableMeals = () => {
     fetchMeals();
   }, []);
 
+  // when it is Loadign, we do not want to show the <MealItem /> section, so we set this if sentence.
   if(isLoading) {
     return (
       <section className={classes.MealsLoading}>
