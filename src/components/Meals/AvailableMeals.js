@@ -7,11 +7,17 @@ import MealItem from "./MealItem/MealItem";
 const AvailableMeals = () => {
   const [meals, setMeals] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [httpError, setHttpError] = useState();
 
   useEffect(() => {
+    // Inside of the useeffect, cannot use async directrly, so set the fucntion fetchMeals() and set async inside of the function
     const fetchMeals = async() => {
-      const response = await fetch('https://food-order-app-88517-default-rtdb.firebaseio.com/meals');
+      const response = await fetch('https://food-order-app-88517-default-rtdb.firebaseio.com/meals.json');
       const responseData = await response.json();
+
+      if(!response.ok) {
+        throw new Error("Something went wrong")
+      }
 
       const loadedMeals = [];
 
@@ -23,11 +29,17 @@ const AvailableMeals = () => {
           price:responseData[key].price
         })
       }
-
       setMeals(loadedMeals);
       setIsLoading(false);
     }
-    fetchMeals();
+
+    // throw error in fetchMeals function -> it resolves coz async return promises
+    // catch the error
+    fetchMeals().catch((error) => {
+      setIsLoading(false);
+      setHttpError(error.message);
+    })
+    
   }, []);
 
   // when it is Loadign, we do not want to show the <MealItem /> section, so we set this if sentence.
@@ -35,6 +47,15 @@ const AvailableMeals = () => {
     return (
       <section className={classes.MealsLoading}>
         <p>Loading...</p>
+      </section>
+    )
+  }
+
+  // if error happes, show this insted of <MealItem /> 
+  if(httpError) {
+    return (
+      <section className={classes.MealsError}>
+        <p>{httpError}</p>
       </section>
     )
   }
